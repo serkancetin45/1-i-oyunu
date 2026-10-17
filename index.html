@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Neon Hece Okuma Oyunu</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Fredoka+One&display=swap" rel="stylesheet">
@@ -35,6 +35,11 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
             background-color: var(--bg-base);
             background-image: 
@@ -42,11 +47,11 @@
                 radial-gradient(circle at 50% 100%, rgba(217, 70, 239, 0.1) 0%, transparent 50%);
             font-family: 'BenimFontum', 'Patrick Hand', cursive, sans-serif;
             font-weight: bold;
-            height: 100vh;
+            /* 100dvh: Mobil tarayıcı adres çubuğu payını hesaba katar */
+            height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
             color: white;
         }
 
@@ -54,29 +59,32 @@
             display: none;
             width: 100%;
             max-width: 500px;
-            height: 100%;
+            /* Dinamik viewport yüksekliği: telefonlarda alt kırpılmayı önler */
+            height: 100dvh;
             max-height: 900px;
             position: relative;
-            padding: 20px;
+            padding: 12px 15px 6px 15px;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .screen.active {
             display: flex;
         }
 
+        /* --- ÜST BAR --- */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            height: 100px;
+            height: 85px;
             flex-shrink: 0;
             position: relative;
         }
 
         .vinyl-container {
-            width: 90px;
-            height: 90px;
+            width: 80px;
+            height: 80px;
             position: relative;
             z-index: 2;
             display: flex;
@@ -85,8 +93,8 @@
         }
 
         .vinyl {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             background: 
                 radial-gradient(circle, #111 15%, transparent 16%),
@@ -106,8 +114,8 @@
         }
 
         .vinyl-center {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             background: linear-gradient(135deg, #ef4444, #b91c1c);
             border-radius: 50%;
             border: 2px solid #3b82f6;
@@ -119,18 +127,18 @@
 
         .vinyl-center::after {
             content: '';
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background: #000;
             border-radius: 50%;
         }
 
         .notes-container {
             position: absolute;
-            left: 100px;
+            left: 90px;
             top: 5px;
             right: 50px;
-            height: 85px;
+            height: 75px;
             pointer-events: none;
             z-index: 1;
             overflow: hidden;
@@ -145,22 +153,22 @@
             text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
         }
 
-        .note1  { left: 0%;   font-size: 1.6rem; color: var(--neon-cyan);   animation-delay: 0.0s; }
-        .note2  { left: 8%;   font-size: 1.1rem; color: var(--neon-blue);   animation-delay: 0.3s; }
-        .note3  { left: 16%;  font-size: 1.8rem; color: var(--neon-pink);   animation-delay: 0.6s; }
-        .note4  { left: 24%;  font-size: 1.3rem; color: var(--neon-purple); animation-delay: 0.9s; }
-        .note5  { left: 32%;  font-size: 1.5rem; color: var(--neon-orange); animation-delay: 1.2s; }
-        .note6  { left: 40%;  font-size: 1.2rem; color: var(--neon-cyan);   animation-delay: 0.15s; }
-        .note7  { left: 48%;  font-size: 2.0rem; color: var(--neon-pink);   animation-delay: 0.45s; }
-        .note8  { left: 56%;  font-size: 1.4rem; color: var(--neon-blue);   animation-delay: 0.75s; }
-        .note9  { left: 64%;  font-size: 1.6rem; color: var(--neon-green);  animation-delay: 1.05s; }
-        .note10 { left: 72%;  font-size: 1.0rem; color: var(--neon-purple); animation-delay: 1.35s; }
-        .note11 { left: 80%;  font-size: 1.7rem; color: var(--neon-cyan);   animation-delay: 0.2s; }
-        .note12 { left: 88%;  font-size: 1.3rem; color: var(--neon-orange); animation-delay: 0.5s; }
+        .note1  { left: 0%;   font-size: 1.4rem; color: var(--neon-cyan);   animation-delay: 0.0s; }
+        .note2  { left: 8%;   font-size: 0.9rem; color: var(--neon-blue);   animation-delay: 0.3s; }
+        .note3  { left: 16%;  font-size: 1.6rem; color: var(--neon-pink);   animation-delay: 0.6s; }
+        .note4  { left: 24%;  font-size: 1.1rem; color: var(--neon-purple); animation-delay: 0.9s; }
+        .note5  { left: 32%;  font-size: 1.3rem; color: var(--neon-orange); animation-delay: 1.2s; }
+        .note6  { left: 40%;  font-size: 1.0rem; color: var(--neon-cyan);   animation-delay: 0.15s; }
+        .note7  { left: 48%;  font-size: 1.8rem; color: var(--neon-pink);   animation-delay: 0.45s; }
+        .note8  { left: 56%;  font-size: 1.2rem; color: var(--neon-blue);   animation-delay: 0.75s; }
+        .note9  { left: 64%;  font-size: 1.4rem; color: var(--neon-green);  animation-delay: 1.05s; }
+        .note10 { left: 72%;  font-size: 0.9rem; color: var(--neon-purple); animation-delay: 1.35s; }
+        .note11 { left: 80%;  font-size: 1.5rem; color: var(--neon-cyan);   animation-delay: 0.2s; }
+        .note12 { left: 88%;  font-size: 1.1rem; color: var(--neon-orange); animation-delay: 0.5s; }
 
         .settings-icon {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             cursor: pointer;
             z-index: 2;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -168,11 +176,12 @@
         }
         .settings-icon:hover { transform: rotate(90deg) scale(1.1); }
 
+        /* --- SKOR TABLOSU --- */
         .score-area {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 8px;
+            margin-bottom: 8px;
             flex-shrink: 0;
             display: none;
         }
@@ -182,10 +191,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-size: 1rem;
-            padding: 6px;
+            font-size: 0.95rem;
+            padding: 5px;
             background: rgba(255,255,255,0.03);
-            border-radius: 10px;
+            border-radius: 8px;
             border: 2px solid transparent;
             transition: all 0.4s ease;
             color: #64748b;
@@ -194,14 +203,15 @@
         
         .player-score .p-name {
             font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 2px;
+            font-size: 1rem;
+            margin-bottom: 1px;
         }
 
         .player-score .p-score {
             font-family: 'Fredoka One', cursive;
             font-weight: bold;
             color: var(--yellow-btn);
+            font-size: 0.95rem;
         }
 
         .player-score.active-turn {
@@ -212,11 +222,12 @@
             transform: scale(1.03);
         }
 
-        /* --- KELİME EKRANI (YUKARI TAŞINDI) --- */
+        /* --- KELİME EKRANI (FLEX: 1 ile kalan alanı doldurur) --- */
         .neon-box {
             border: 3px solid rgba(59, 130, 246, 0.8);
             border-radius: 20px;
             flex: 1;
+            min-height: 0; /* flex çocuklarının küçülmesine izin ver */
             position: relative;
             box-shadow: 
                 0 0 20px rgba(59, 130, 246, 0.3), 
@@ -226,8 +237,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            /* Alt boşluk azaltıldı, üst boşluk korundu */
+            padding: 15px;
             margin-bottom: 10px;
             background: rgba(15, 23, 42, 0.4);
             backdrop-filter: blur(5px);
@@ -241,8 +251,8 @@
             color: #1e3a8a;
             font-family: 'Fredoka One', cursive;
             font-weight: bold;
-            font-size: 1.8rem;
-            padding: 10px 40px;
+            font-size: 1.6rem;
+            padding: 10px 35px;
             box-shadow: 
                 0 4px 0 #ca8a04, 
                 0 8px 15px rgba(0,0,0,0.6),
@@ -275,25 +285,22 @@
             overflow: hidden;
         }
 
-        /* --- CEVAP BUTONLARI (YUKARI TAŞINDI VE ALT BOŞLUK VERİLDİ) --- */
+        /* --- CEVAP BUTONLARI (Ekranın alt kısmında, sabit ve görünür) --- */
         .answer-buttons {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            /* Butonların altında nefes alacak boşluk */
-            padding-bottom: 20px;
-            padding-top: 5px;
-            flex-shrink: 0;
-            /* margin-top: auto kaldırıldı, böylece yukarı çekildi */
+            padding: 5px 0 10px 0;
+            flex-shrink: 0; /* Küçülmesini engelle */
             gap: 20px;
         }
 
         .round-btn {
-            width: 90px;
-            height: 90px;
+            width: 82px;
+            height: 82px;
             border-radius: 50%;
             border: 3px solid rgba(255,255,255,0.9);
-            font-size: 3.2rem;
+            font-size: 3rem;
             color: white;
             display: flex;
             justify-content: center;
@@ -301,6 +308,7 @@
             cursor: pointer;
             transition: 0.1s;
             position: relative;
+            flex-shrink: 0;
         }
         
         .round-btn:active {
@@ -334,18 +342,36 @@
             filter: grayscale(0.8);
         }
 
+        /* --- ALT YAZI (Artık normal akışta, butonların altında) --- */
+        .footer-note {
+            width: 100%;
+            text-align: center;
+            font-family: 'Fredoka One', cursive;
+            font-weight: bold;
+            font-size: 0.75rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan);
+            opacity: 0.85;
+            pointer-events: none;
+            letter-spacing: 1px;
+            padding: 4px 0 6px 0;
+            flex-shrink: 0;
+        }
+
+        /* --- AYAR EKRANI --- */
         .neon-box-pink {
             border: 3px solid rgba(217, 70, 239, 0.8);
             border-radius: 20px;
             flex: 1;
+            min-height: 0;
             position: relative;
             box-shadow: 
                 0 0 20px rgba(217, 70, 239, 0.3), 
                 inset 0 0 20px rgba(217, 70, 239, 0.2);
             display: flex;
             flex-direction: column;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 10px;
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(5px);
             overflow-y: auto;
@@ -353,8 +379,8 @@
 
         .palm-tree {
             position: absolute;
-            top: -55px; left: -10px;
-            font-size: 55px;
+            top: -50px; left: -8px;
+            font-size: 50px;
             color: #22c55e;
             text-shadow: 0 0 15px #22c55e;
             transform: rotate(-10deg);
@@ -364,8 +390,8 @@
         .settings-label {
             font-family: 'BenimFontum', 'Patrick Hand', cursive;
             font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 5px;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
             color: #cbd5e1;
         }
 
@@ -375,11 +401,11 @@
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: 10px;
             color: white;
-            padding: 12px 15px;
+            padding: 10px 12px;
             font-family: 'BenimFontum', 'Patrick Hand', cursive;
             font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
@@ -391,7 +417,7 @@
 
         .words-textarea {
             flex: 1;
-            min-height: 120px;
+            min-height: 100px;
             resize: none;
             line-height: 1.5;
         }
@@ -400,35 +426,19 @@
             background: transparent;
             border: 2px solid rgba(255,255,255,0.7);
             color: white;
-            padding: 12px;
+            padding: 10px;
             border-radius: 20px;
             font-family: 'BenimFontum', 'Patrick Hand', cursive;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             align-self: center;
             width: 100%;
             max-width: 250px;
             transition: 0.2s;
+            flex-shrink: 0;
         }
         .back-btn:active { background: rgba(255,255,255,0.1); }
-
-        .footer-note {
-            position: absolute;
-            bottom: 3px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-family: 'Fredoka One', cursive;
-            font-weight: bold;
-            font-size: 0.8rem;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan);
-            opacity: 0.7;
-            pointer-events: none;
-            letter-spacing: 1px;
-            z-index: 20;
-        }
 
         @keyframes spin {
             100% { transform: rotate(360deg); }
@@ -445,7 +455,9 @@
         .music-playing .floating-note { animation-play-state: running; }
 
         @media (min-width: 768px) {
-            .screen { height: 90vh; border: 1px solid rgba(255,255,255,0.05); border-radius: 25px; box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 100px rgba(59,130,246,0.1); }
+            .screen { height: 90vh; max-height: 850px; border: 1px solid rgba(255,255,255,0.05); border-radius: 25px; box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 100px rgba(59,130,246,0.1); }
+            .round-btn { width: 95px; height: 95px; font-size: 3.5rem; }
+            .footer-note { font-size: 0.9rem; padding: 8px 0; }
         }
     </style>
 </head>
@@ -496,11 +508,11 @@
             <button class="round-btn btn-false" id="btnWrong" onclick="checkAnswer(false)" disabled>✖</button>
         </div>
         
-        <div class="footer-note">1-İ Sınıfı İçin Hazırlanmıştır</div>
+        <div class="footer-note">1/İ Sınıfı İçin Hazırlanmıştır</div>
     </div>
 
     <div id="settingsScreen" class="screen">
-        <div class="top-bar" style="justify-content: flex-end; height: auto; margin-bottom: 10px;">
+        <div class="top-bar" style="justify-content: flex-end; height: auto; margin-bottom: 8px;">
              <div class="settings-icon" onclick="closeSettings()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -524,7 +536,7 @@
             <button class="back-btn" onclick="saveSettings()">KAYDET & GERİ DÖN</button>
         </div>
         
-        <div class="footer-note">1-İ Sınıfı İçin Hazırlanmıştır</div>
+        <div class="footer-note">1/İ Sınıfı İçin Hazırlanmıştır</div>
     </div>
 
     <script>
