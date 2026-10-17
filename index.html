@@ -20,6 +20,9 @@
             --neon-blue: #3b82f6;
             --neon-cyan: #06b6d4;
             --neon-pink: #d946ef;
+            --neon-green: #22c55e;
+            --neon-purple: #a855f7;
+            --neon-orange: #f97316;
             --yellow-btn: #fde047;
             --bg-base: #060b19;
         }
@@ -122,29 +125,40 @@
             border-radius: 50%;
         }
 
+        /* --- NOTALAR KONTEYNERİ --- */
         .notes-container {
             position: absolute;
             left: 110px;
             top: 10px;
-            width: 100px;
+            right: 50px;
             height: 90px;
             pointer-events: none;
             z-index: 1;
+            overflow: hidden;
         }
 
         .floating-note {
             position: absolute;
-            font-size: 1.8rem;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
             opacity: 0;
             animation: danceNote 2s infinite ease-in-out;
             animation-play-state: paused;
+            bottom: 0;
+            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
         }
 
-        .note1 { left: 0%;  bottom: 0; animation-delay: 0s; }
-        .note2 { left: 40%; bottom: 10px; animation-delay: 0.4s; font-size: 1.4rem; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
-        .note3 { left: 75%; bottom: 0; animation-delay: 0.8s; font-size: 2.2rem; color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink); }
+        /* 12 Farklı Nota - Farklı konum, boyut, renk ve gecikme */
+        .note1  { left: 0%;   font-size: 1.8rem; color: var(--neon-cyan);   animation-delay: 0.0s; }
+        .note2  { left: 8%;   font-size: 1.2rem; color: var(--neon-blue);   animation-delay: 0.3s; }
+        .note3  { left: 16%;  font-size: 2.0rem; color: var(--neon-pink);   animation-delay: 0.6s; }
+        .note4  { left: 24%;  font-size: 1.4rem; color: var(--neon-purple); animation-delay: 0.9s; }
+        .note5  { left: 32%;  font-size: 1.6rem; color: var(--neon-orange); animation-delay: 1.2s; }
+        .note6  { left: 40%;  font-size: 1.3rem; color: var(--neon-cyan);   animation-delay: 0.15s; }
+        .note7  { left: 48%;  font-size: 2.2rem; color: var(--neon-pink);   animation-delay: 0.45s; }
+        .note8  { left: 56%;  font-size: 1.5rem; color: var(--neon-blue);   animation-delay: 0.75s; }
+        .note9  { left: 64%;  font-size: 1.7rem; color: var(--neon-green);  animation-delay: 1.05s; }
+        .note10 { left: 72%;  font-size: 1.1rem; color: var(--neon-purple); animation-delay: 1.35s; }
+        .note11 { left: 80%;  font-size: 1.9rem; color: var(--neon-cyan);   animation-delay: 0.2s; }
+        .note12 { left: 88%;  font-size: 1.4rem; color: var(--neon-orange); animation-delay: 0.5s; }
 
         .settings-icon {
             width: 45px;
@@ -251,13 +265,14 @@
             justify-content: center;
             text-align: center;
             white-space: nowrap;
-            font-size: clamp(1.8rem, 12vw, 5rem);
+            font-size: clamp(2rem, 22vw, 7rem);
             color: var(--yellow-btn);
             text-shadow: 0 0 20px rgba(253, 224, 71, 0.6), 0 0 50px rgba(253, 224, 71, 0.3);
             z-index: 10;
             padding: 0 5px;
             letter-spacing: 2px;
             transition: filter 0.1s, opacity 0.1s;
+            overflow: hidden;
         }
 
         .answer-buttons {
@@ -440,10 +455,20 @@
                 </div>
             </div>
             
+            <!-- NOTALAR: 3'ten 12'ye çıkarıldı -->
             <div class="notes-container">
                 <div class="floating-note note1">♪</div>
                 <div class="floating-note note2">♫</div>
                 <div class="floating-note note3">♩</div>
+                <div class="floating-note note4">♬</div>
+                <div class="floating-note note5">♪</div>
+                <div class="floating-note note6">♫</div>
+                <div class="floating-note note7">♩</div>
+                <div class="floating-note note8">♬</div>
+                <div class="floating-note note9">♪</div>
+                <div class="floating-note note10">♫</div>
+                <div class="floating-note note11">♩</div>
+                <div class="floating-note note12">♬</div>
             </div>
 
             <div class="settings-icon" onclick="openSettings()">
@@ -503,7 +528,6 @@
             { id: 2, name: 'Oyuncu 2', score: 0 }
         ];
         let currentPlayerIndex = 0;
-        // YENİ KELİME LİSTESİ (Hece Okuma Pratiği)
         let words = ["an", "na", "ana", "en", "ne", "nane", "anne", "nene", "at", "ta", "Ata", "ten", "anten", "Tan", "tat", "et", "net"];
         let isGameActive = false;
         let canAnswer = false;
