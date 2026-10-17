@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Hece Okuma Oyunu</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Fredoka+One&display=swap" rel="stylesheet">
+    
+    <style>
+        @font-face {
+            font-family: 'BenimFontum';
+            src: url('font-dosyaniz.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --neon-blue: #3b82f6;
+            --neon-cyan: #06b6d4;
+            --neon-pink: #d946ef;
+            --yellow-btn: #fde047;
+            --bg-base: #060b19;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(217, 70, 239, 0.1) 0%, transparent 50%);
+            font-family: 'BenimFontum', 'Patrick Hand', cursive, sans-serif;
+            font-weight: bold;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: white;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            max-height: 900px;
+            position: relative;
+            padding: 20px;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            height: 110px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .vinyl-container {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .vinyl {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle, #111 15%, transparent 16%),
+                radial-gradient(circle, transparent 25%, rgba(255,255,255,0.05) 26%, transparent 27%),
+                radial-gradient(circle, transparent 35%, rgba(255,255,255,0.05) 36%, transparent 37%),
+                radial-gradient(circle, transparent 45%, rgba(255,255,255,0.05) 46%, transparent 47%),
+                conic-gradient(from 0deg, #0f172a, #1e293b, #0f172a, #1e293b, #0f172a);
+            box-shadow: 
+                0 0 15px rgba(59, 130, 246, 0.4),
+                inset 0 0 15px rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: spin 3s linear infinite;
+            animation-play-state: paused;
+            position: relative;
+        }
+
+        .vinyl-center {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            border-radius: 50%;
+            border: 2px solid #3b82f6;
+            box-shadow: 0 0 10px #3b82f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .vinyl-center::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #000;
+            border-radius: 50%;
+        }
+
+        .notes-container {
+            position: absolute;
+            left: 110px;
+            top: 10px;
+            width: 100px;
+            height: 90px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-note {
+            position: absolute;
+            font-size: 1.8rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+            opacity: 0;
+            animation: danceNote 2s infinite ease-in-out;
+            animation-play-state: paused;
+        }
+
+        .note1 { left: 0%;  bottom: 0; animation-delay: 0s; }
+        .note2 { left: 40%; bottom: 10px; animation-delay: 0.4s; font-size: 1.4rem; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
+        .note3 { left: 75%; bottom: 0; animation-delay: 0.8s; font-size: 2.2rem; color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink); }
+
+        .settings-icon {
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            z-index: 2;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+        }
+        .settings-icon:hover { transform: rotate(90deg) scale(1.1); }
+
+        .score-area {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+            display: none;
+        }
+
+        .player-score {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 1.1rem;
+            padding: 8px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            transition: all 0.4s ease;
+            color: #64748b;
+            text-align: center;
+        }
+        
+        .player-score .p-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        .player-score .p-score {
+            font-family: 'Fredoka One', cursive;
+            font-weight: bold;
+            color: var(--yellow-btn);
+        }
+
+        .player-score.active-turn {
+            color: white;
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), inset 0 0 10px rgba(59, 130, 246, 0.2);
+            transform: scale(1.05);
+        }
+
+        .neon-box {
+            border: 3px solid rgba(59, 130, 246, 0.8);
+            border-radius: 20px;
+            flex: 1;
+            position: relative;
+            box-shadow: 
+                0 0 20px rgba(59, 130, 246, 0.3), 
+                inset 0 0 20px rgba(59, 130, 246, 0.2),
+                0 0 40px rgba(59, 130, 246, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+        }
+
+        .start-btn {
+            background: linear-gradient(to bottom, #fef08a, #eab308);
+            border: 2px solid #fff;
+            border-radius: 30px;
+            color: #1e3a8a;
+            font-family: 'Fredoka One', cursive;
+            font-weight: bold;
+            font-size: 2rem;
+            padding: 12px 45px;
+            box-shadow: 
+                0 4px 0 #ca8a04, 
+                0 8px 15px rgba(0,0,0,0.6),
+                0 0 30px rgba(253, 224, 71, 0.5), 
+                inset 0 0 15px rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: 0.1s;
+            z-index: 5;
+        }
+        .start-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #ca8a04, 0 4px 8px rgba(0,0,0,0.6), 0 0 20px rgba(253, 224, 71, 0.4);
+        }
+
+        .word-display {
+            display: none;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            white-space: nowrap;
+            font-size: clamp(1.8rem, 12vw, 5rem);
+            color: var(--yellow-btn);
+            text-shadow: 0 0 20px rgba(253, 224, 71, 0.6), 0 0 50px rgba(253, 224, 71, 0.3);
+            z-index: 10;
+            padding: 0 5px;
+            letter-spacing: 2px;
+            transition: filter 0.1s, opacity 0.1s;
+        }
+
+        .answer-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .round-btn {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.9);
+            font-size: 3rem;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.1s;
+            position: relative;
+        }
+        
+        .round-btn:active {
+            transform: translateY(3px) scale(0.95);
+        }
+
+        .btn-true { 
+            background: radial-gradient(circle at 30% 30%, #4ade80, #166534);
+            box-shadow: 
+                0 6px 0 #14532d, 
+                0 10px 20px rgba(0,0,0,0.6),
+                0 0 30px rgba(74, 222, 128, 0.6), 
+                inset 0 -4px 10px rgba(0,0,0,0.3),
+                inset 0 4px 15px rgba(255,255,255,0.3);
+        }
+        
+        .btn-false { 
+            background: radial-gradient(circle at 30% 30%, #f87171, #991b1b);
+            box-shadow: 
+                0 6px 0 #7f1d1d, 
+                0 10px 20px rgba(0,0,0,0.6),
+                0 0 30px rgba(248, 113, 113, 0.6), 
+                inset 0 -4px 10px rgba(0,0,0,0.3),
+                inset 0 4px 15px rgba(255,255,255,0.3);
+        }
+        
+        .round-btn:disabled {
+            opacity: 0.3;
+            transform: none;
+            box-shadow: none;
+            filter: grayscale(0.8);
+        }
+
+        .neon-box-pink {
+            border: 3px solid rgba(217, 70, 239, 0.8);
+            border-radius: 20px;
+            flex: 1;
+            position: relative;
+            box-shadow: 
+                0 0 20px rgba(217, 70, 239, 0.3), 
+                inset 0 0 20px rgba(217, 70, 239, 0.2);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(5px);
+            overflow-y: auto;
+        }
+
+        .palm-tree {
+            position: absolute;
+            top: -55px; left: -10px;
+            font-size: 55px;
+            color: #22c55e;
+            text-shadow: 0 0 15px #22c55e;
+            transform: rotate(-10deg);
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+        }
+
+        .settings-label {
+            font-family: 'BenimFontum', 'Patrick Hand', cursive;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #cbd5e1;
+        }
+
+        .name-input-setting, .words-textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: white;
+            padding: 12px 15px;
+            font-family: 'BenimFontum', 'Patrick Hand', cursive;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .name-input-setting:focus, .words-textarea:focus {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 10px rgba(217, 70, 239, 0.3);
+        }
+
+        .words-textarea {
+            flex: 1;
+            min-height: 120px;
+            resize: none;
+            line-height: 1.5;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.7);
+            color: white;
+            padding: 12px;
+            border-radius: 20px;
+            font-family: 'BenimFontum', 'Patrick Hand', cursive;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            align-self: center;
+            width: 100%;
+            max-width: 250px;
+            transition: 0.2s;
+        }
+        .back-btn:active { background: rgba(255,255,255,0.1); }
+
+        .footer-note {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: 'Fredoka One', cursive;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan);
+            opacity: 0.7;
+            pointer-events: none;
+            letter-spacing: 1px;
+            z-index: 20;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes danceNote {
+            0%   { transform: translateY(0) rotate(-10deg) scale(1); opacity: 0; }
+            20%  { opacity: 1; }
+            50%  { transform: translateY(-30px) rotate(15deg) scale(1.2); opacity: 1; }
+            80%  { opacity: 1; }
+            100% { transform: translateY(-60px) rotate(-10deg) scale(0.9); opacity: 0; }
+        }
+
+        .music-playing .floating-note { animation-play-state: running; }
+
+        @media (min-width: 768px) {
+            .screen { height: 90vh; border: 1px solid rgba(255,255,255,0.05); border-radius: 25px; box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 100px rgba(59,130,246,0.1); }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" src=""></audio>
+
+    <div id="homeScreen" class="screen active">
+        <div class="top-bar" id="topBar">
+            <div class="vinyl-container">
+                <div class="vinyl" id="recordDisc">
+                    <div class="vinyl-center"></div>
+                </div>
+            </div>
+            
+            <div class="notes-container">
+                <div class="floating-note note1">♪</div>
+                <div class="floating-note note2">♫</div>
+                <div class="floating-note note3">♩</div>
+            </div>
+
+            <div class="settings-icon" onclick="openSettings()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="score-area" id="scoreArea"></div>
+
+        <div class="neon-box">
+            <button class="start-btn" id="startBtn" onclick="startGame()">START</button>
+            <div class="word-display" id="wordDisplay"></div>
+        </div>
+
+        <div class="answer-buttons">
+            <button class="round-btn btn-true" id="btnCorrect" onclick="checkAnswer(true)" disabled>✔</button>
+            <button class="round-btn btn-false" id="btnWrong" onclick="checkAnswer(false)" disabled>✖</button>
+        </div>
+        
+        <div class="footer-note">1-İ Sınıfı İçin Hazırlanmıştır</div>
+    </div>
+
+    <div id="settingsScreen" class="screen">
+        <div class="top-bar" style="justify-content: flex-end; height: auto; margin-bottom: 10px;">
+             <div class="settings-icon" onclick="closeSettings()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </div>
+        </div>
+
+        <div class="neon-box-pink">
+            <div class="palm-tree">🌴</div>
+            
+            <div class="settings-label">1. Oyuncu Adı</div>
+            <input type="text" id="p1Name" class="name-input-setting" value="Oyuncu 1" maxlength="15">
+            
+            <div class="settings-label">2. Oyuncu Adı</div>
+            <input type="text" id="p2Name" class="name-input-setting" value="Oyuncu 2" maxlength="15">
+
+            <div class="settings-label">Kelimeler (Her satıra bir kelime)</div>
+            <textarea id="wordsInput" class="words-textarea" placeholder="Örn:&#10;kitap&#10;kalem&#10;deniz"></textarea>
+            
+            <button class="back-btn" onclick="saveSettings()">KAYDET & GERİ DÖN</button>
+        </div>
+        
+        <div class="footer-note">1-İ Sınıfı İçin Hazırlanmıştır</div>
+    </div>
+
+    <script>
+        let players = [
+            { id: 1, name: 'Oyuncu 1', score: 0 },
+            { id: 2, name: 'Oyuncu 2', score: 0 }
+        ];
+        let currentPlayerIndex = 0;
+        // YENİ KELİME LİSTESİ (Hece Okuma Pratiği)
+        let words = ["an", "na", "ana", "en", "ne", "nane", "anne", "nene", "at", "ta", "Ata", "ten", "anten", "Tan", "tat", "et", "net"];
+        let isGameActive = false;
+        let canAnswer = false;
+
+        let rollInterval = null;
+
+        const songs = [
+            "sarki1.mp3", 
+            "sarki2.mp3"
+        ];
+        
+        const audioPlayer = document.getElementById('bgMusic');
+
+        const homeScreen = document.getElementById('homeScreen');
+        const settingsScreen = document.getElementById('settingsScreen');
+        const startBtn = document.getElementById('startBtn');
+        const wordDisplay = document.getElementById('wordDisplay');
+        const btnCorrect = document.getElementById('btnCorrect');
+        const btnWrong = document.getElementById('btnWrong');
+        const recordDisc = document.getElementById('recordDisc');
+        const scoreArea = document.getElementById('scoreArea');
+        const p1Input = document.getElementById('p1Name');
+        const p2Input = document.getElementById('p2Name');
+        const wordsInput = document.getElementById('wordsInput');
+        const topBar = document.getElementById('topBar');
+
+        function openSettings() {
+            settingsScreen.classList.add('active');
+            homeScreen.classList.remove('active');
+            p1Input.value = players[0].name;
+            p2Input.value = players[1].name;
+            wordsInput.value = words.join('\n');
+        }
+
+        function closeSettings() {
+            settingsScreen.classList.remove('active');
+            homeScreen.classList.add('active');
+        }
+
+        function saveSettings() {
+            players[0].name = p1Input.value.trim() || 'Oyuncu 1';
+            players[1].name = p2Input.value.trim() || 'Oyuncu 2';
+            
+            const text = wordsInput.value.trim();
+            if (text) {
+                words = text.split('\n').map(w => w.trim()).filter(w => w.length > 0);
+            }
+            
+            if (!isGameActive) {
+                updateScoreboard();
+            }
+            closeSettings();
+        }
+
+        function startGame() {
+            players.forEach(p => p.score = 0);
+            currentPlayerIndex = 0;
+            isGameActive = true;
+
+            scoreArea.style.display = 'flex';
+            updateScoreboard();
+            startBtn.style.display = 'none';
+            wordDisplay.style.display = 'flex';
+            
+            playTurn();
+        }
+
+        function playTurn() {
+            updateScoreboard();
+            
+            btnCorrect.disabled = true;
+            btnWrong.disabled = true;
+            canAnswer = false;
+
+            playRandomMusic();
+            startWordRoll();
+
+            setTimeout(() => {
+                stopMusic();
+                stopWordRoll();
+            }, 6000);
+        }
+
+        function playRandomMusic() {
+            if (songs.length === 0) return;
+            
+            const randomSong = songs[Math.floor(Math.random() * songs.length)];
+            audioPlayer.src = randomSong;
+            audioPlayer.play().catch(e => console.log("Müzik çalınamadı:", e));
+            
+            recordDisc.style.animationPlayState = 'running';
+            topBar.classList.add('music-playing');
+        }
+
+        function stopMusic() {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            
+            recordDisc.style.animationPlayState = 'paused';
+            topBar.classList.remove('music-playing');
+        }
+
+        function startWordRoll() {
+            rollInterval = setInterval(() => {
+                const randomWord = words[Math.floor(Math.random() * words.length)];
+                wordDisplay.textContent = randomWord;
+                wordDisplay.style.opacity = "0.7"; 
+            }, 60);
+        }
+
+        function stopWordRoll() {
+            clearInterval(rollInterval);
+            wordDisplay.style.opacity = "1";
+
+            const finalWord = words[Math.floor(Math.random() * words.length)];
+            wordDisplay.textContent = finalWord;
+            
+            btnCorrect.disabled = false;
+            btnWrong.disabled = false;
+            canAnswer = true;
+        }
+
+        function checkAnswer(isCorrect) {
+            if (!canAnswer) return;
+            canAnswer = false;
+            
+            btnCorrect.disabled = true;
+            btnWrong.disabled = true;
+
+            if (isCorrect) {
+                players[currentPlayerIndex].score += 10;
+            }
+
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            wordDisplay.style.display = 'none';
+
+            setTimeout(() => {
+                if (isGameActive) {
+                    wordDisplay.style.display = 'flex';
+                    playTurn();
+                }
+            }, 1000);
+        }
+
+        function updateScoreboard() {
+            scoreArea.innerHTML = '';
+            players.forEach((p, index) => {
+                const div = document.createElement('div');
+                div.className = `player-score ${index === currentPlayerIndex && isGameActive ? 'active-turn' : ''}`;
+                div.innerHTML = `
+                    <div class="p-name">${p.name}</div>
+                    <div class="p-score">${p.score} Puan</div>
+                `;
+                scoreArea.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
