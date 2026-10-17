@@ -70,6 +70,38 @@
             display: flex;
         }
 
+        /* --- KONFETİ KATMANI --- */
+        .confetti-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100dvh;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 14px;
+            opacity: 0;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-20px) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(105vh) rotate(720deg) scale(0.6);
+                opacity: 0.2;
+            }
+        }
+
+        /* --- ÜST BAR --- */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -231,16 +263,20 @@
             transform: scale(1.03);
         }
 
+        /* --- KELİME EKRANI (DAHA KALIN NEON) --- */
         .neon-box {
-            border: 3px solid rgba(59, 130, 246, 0.8);
+            border: 5px solid rgba(59, 130, 246, 0.9);
             border-radius: 20px;
             flex: 1;
             min-height: 0;
             position: relative;
             box-shadow: 
-                0 0 20px rgba(59, 130, 246, 0.3), 
-                inset 0 0 20px rgba(59, 130, 246, 0.2),
-                0 0 40px rgba(59, 130, 246, 0.1);
+                0 0 10px rgba(59, 130, 246, 0.9),
+                0 0 25px rgba(59, 130, 246, 0.7), 
+                0 0 50px rgba(59, 130, 246, 0.5),
+                0 0 80px rgba(59, 130, 246, 0.3),
+                inset 0 0 15px rgba(59, 130, 246, 0.4),
+                inset 0 0 30px rgba(59, 130, 246, 0.25);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -293,33 +329,52 @@
             overflow: hidden;
         }
 
+        /* --- CEVAP BUTONLARI --- */
         .answer-buttons {
             display: flex;
             justify-content: space-around;
-            align-items: center;
+            align-items: stretch;
             padding: 5px 0 10px 0;
             flex-shrink: 0;
-            gap: 20px;
+            gap: 12px;
         }
 
         .round-btn {
-            width: 82px;
-            height: 82px;
-            border-radius: 50%;
+            flex: 1;
+            max-width: 180px;
+            min-height: 75px;
+            border-radius: 20px;
             border: 3px solid rgba(255,255,255,0.9);
-            font-size: 3rem;
+            font-size: 1.1rem;
+            font-family: 'Fredoka One', cursive;
+            font-weight: bold;
             color: white;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             transition: 0.1s;
             position: relative;
-            flex-shrink: 0;
+            padding: 8px 10px;
+            text-align: center;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
         }
         
         .round-btn:active {
-            transform: translateY(3px) scale(0.95);
+            transform: translateY(3px) scale(0.97);
+        }
+
+        .round-btn .btn-main {
+            font-size: 1.3rem;
+            margin-bottom: 2px;
+        }
+
+        .round-btn .btn-sub {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            font-weight: normal;
         }
 
         .btn-true { 
@@ -349,20 +404,21 @@
             filter: grayscale(0.8);
         }
 
+        /* --- ALT YAZI (Normal font, yeşil neon) --- */
         .footer-note {
             width: 100%;
             text-align: center;
-            font-family: 'Fredoka One', cursive;
-            font-weight: bold;
-            font-size: 0.7rem;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan);
-            opacity: 0.85;
+            font-family: 'Patrick Hand', 'Segoe UI', sans-serif;
+            font-weight: normal;
+            font-size: 0.75rem;
+            color: var(--neon-green);
+            text-shadow: 0 0 5px var(--neon-green), 0 0 10px var(--neon-green);
+            opacity: 0.9;
             pointer-events: none;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             padding: 4px 0 6px 0;
             flex-shrink: 0;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
         .neon-box-pink {
@@ -550,7 +606,9 @@
 
         @media (min-width: 768px) {
             .screen { height: 90vh; max-height: 850px; border: 1px solid rgba(255,255,255,0.05); border-radius: 25px; box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 100px rgba(59,130,246,0.1); }
-            .round-btn { width: 95px; height: 95px; font-size: 3.5rem; }
+            .round-btn { min-height: 90px; }
+            .round-btn .btn-main { font-size: 1.5rem; }
+            .round-btn .btn-sub { font-size: 1rem; }
             .footer-note { font-size: 0.85rem; padding: 8px 0; }
         }
     </style>
@@ -558,6 +616,9 @@
 <body>
 
     <audio id="bgMusic" src=""></audio>
+
+    <!-- KONFETİ KATMANI -->
+    <div class="confetti-layer" id="confettiLayer"></div>
 
     <!-- ANA EKRAN -->
     <div id="homeScreen" class="screen active">
@@ -600,11 +661,17 @@
         </div>
 
         <div class="answer-buttons">
-            <button class="round-btn btn-true" id="btnCorrect" onclick="checkAnswer(true)" disabled>✔</button>
-            <button class="round-btn btn-false" id="btnWrong" onclick="checkAnswer(false)" disabled>✖</button>
+            <button class="round-btn btn-true" id="btnCorrect" onclick="checkAnswer(true)" disabled>
+                <span class="btn-main">DOĞRU</span>
+                <span class="btn-sub">(+10 Puan)</span>
+            </button>
+            <button class="round-btn btn-false" id="btnWrong" onclick="checkAnswer(false)" disabled>
+                <span class="btn-main">PAS</span>
+                <span class="btn-sub">(0 Puan)</span>
+            </button>
         </div>
         
-        <div class="footer-note">1-İ Sınıfı İçin Hazırlandı.<br>Hüseyin Akdağ İlkokulu</div>
+        <div class="footer-note">1/İ sınıfı için hazırlandı. Hüseyin Akdağ İlkokulu</div>
     </div>
 
     <!-- AYARLAR EKRANI -->
@@ -633,7 +700,7 @@
             <button class="back-btn" onclick="saveSettings()">KAYDET & GERİ DÖN</button>
         </div>
         
-        <div class="footer-note">1-İ Sınıfı İçin Hazırlandı.<br>Hüseyin Akdağ İlkokulu</div>
+        <div class="footer-note">1/İ sınıfı için hazırlandı. Hüseyin Akdağ İlkokulu</div>
     </div>
 
     <!-- OYUN SONU EKRANI -->
@@ -642,7 +709,7 @@
         <div class="end-winner" id="winnerText">Kazanan: —</div>
         <ul class="end-scores" id="endScores"></ul>
         <button class="end-btn" onclick="restartGame()">🔄 Yeniden Oyna</button>
-        <div class="footer-note">1-İ Sınıfı İçin Hazırlandı.<br>Hüseyin Akdağ İlkokulu</div>
+        <div class="footer-note">1/İ sınıfı için hazırlandı. Hüseyin Akdağ İlkokulu</div>
     </div>
 
     <script>
@@ -655,7 +722,6 @@
         let isGameActive = false;
         let canAnswer = false;
 
-        // --- TUR VE TORBA SİSTEMİ ---
         let wordBag = [];
         let currentRound = 1;
         const TOTAL_ROUNDS = 2;
@@ -685,6 +751,42 @@
         const topBar = document.getElementById('topBar');
         const winnerText = document.getElementById('winnerText');
         const endScores = document.getElementById('endScores');
+        const confettiLayer = document.getElementById('confettiLayer');
+
+        // --- KONFETİ FONKSİYONU ---
+        function launchConfetti() {
+            const colors = ['#22c55e', '#3b82f6', '#d946ef', '#fde047', '#f97316', '#06b6d4', '#a855f7', '#ef4444'];
+            const pieceCount = 80;
+
+            for (let i = 0; i < pieceCount; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                
+                // Rastgele özellikler
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const left = Math.random() * 100;
+                const delay = Math.random() * 0.5;
+                const duration = 2 + Math.random() * 1.5;
+                const size = 6 + Math.random() * 8;
+                const isCircle = Math.random() > 0.5;
+                
+                piece.style.left = left + 'vw';
+                piece.style.width = size + 'px';
+                piece.style.height = size + 'px';
+                piece.style.background = color;
+                piece.style.borderRadius = isCircle ? '50%' : '2px';
+                piece.style.boxShadow = `0 0 8px ${color}`;
+                piece.style.animationDuration = duration + 's';
+                piece.style.animationDelay = delay + 's';
+                
+                confettiLayer.appendChild(piece);
+                
+                // Animasyon bittikten sonra temizle
+                setTimeout(() => {
+                    if (piece.parentNode) piece.remove();
+                }, (duration + delay) * 1000 + 200);
+            }
+        }
 
         function openSettings() {
             settingsScreen.classList.add('active');
@@ -714,7 +816,6 @@
             closeSettings();
         }
 
-        // Torbayı doldur ve karıştır (Fisher-Yates)
         function fillWordBag() {
             wordBag = [...words];
             for (let i = wordBag.length - 1; i > 0; i--) {
@@ -723,7 +824,6 @@
             }
         }
 
-        // Torbadan kelime çek (kuraya almama)
         function drawWordFromBag() {
             if (wordBag.length === 0) {
                 currentRound++;
@@ -801,7 +901,6 @@
             topBar.classList.remove('music-playing');
         }
 
-        // Rulo sırasında rastgele görsel gösterim
         function startWordRoll() {
             rollInterval = setInterval(() => {
                 const randomWord = words[Math.floor(Math.random() * words.length)];
@@ -814,7 +913,6 @@
             clearInterval(rollInterval);
             wordDisplay.style.opacity = "1";
 
-            // Asıl kelime torbadan çekilir
             const finalWord = drawWordFromBag();
             
             if (finalWord === null) return;
@@ -835,6 +933,8 @@
 
             if (isCorrect) {
                 players[currentPlayerIndex].score += 10;
+                // DOĞRU CEVAPTA KONFETİ PATLAT
+                launchConfetti();
             }
 
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
