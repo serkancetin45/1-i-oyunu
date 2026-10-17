@@ -84,20 +84,21 @@
 
         .confetti-piece {
             position: absolute;
-            width: 10px;
-            height: 14px;
             opacity: 0;
-            animation: confettiFall linear forwards;
+            animation: confettiBurst linear forwards;
         }
 
-        @keyframes confettiFall {
+        @keyframes confettiBurst {
             0% {
-                transform: translateY(-20px) rotate(0deg) scale(1);
+                transform: translate(0, 0) rotate(0deg) scale(0.6);
+                opacity: 1;
+            }
+            15% {
                 opacity: 1;
             }
             100% {
-                transform: translateY(105vh) rotate(720deg) scale(0.6);
-                opacity: 0.2;
+                transform: translate(var(--drift), var(--rise)) rotate(var(--rotate)) scale(1);
+                opacity: 0;
             }
         }
 
@@ -263,20 +264,21 @@
             transform: scale(1.03);
         }
 
-        /* --- KELİME EKRANI (DAHA KALIN NEON) --- */
+        /* --- KELİME EKRANI --- */
         .neon-box {
-            border: 5px solid rgba(59, 130, 246, 0.9);
+            border: 5px solid rgba(59, 130, 246, 0.95);
             border-radius: 20px;
             flex: 1;
             min-height: 0;
             position: relative;
             box-shadow: 
-                0 0 10px rgba(59, 130, 246, 0.9),
-                0 0 25px rgba(59, 130, 246, 0.7), 
-                0 0 50px rgba(59, 130, 246, 0.5),
-                0 0 80px rgba(59, 130, 246, 0.3),
-                inset 0 0 15px rgba(59, 130, 246, 0.4),
-                inset 0 0 30px rgba(59, 130, 246, 0.25);
+                0 0 12px rgba(59, 130, 246, 1),
+                0 0 30px rgba(59, 130, 246, 0.8), 
+                0 0 60px rgba(59, 130, 246, 0.5),
+                0 0 100px rgba(59, 130, 246, 0.3),
+                inset 0 0 30px rgba(59, 130, 246, 0.5),
+                inset 0 0 60px rgba(59, 130, 246, 0.3),
+                inset 0 0 100px rgba(59, 130, 246, 0.15);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -305,6 +307,7 @@
             cursor: pointer;
             transition: 0.1s;
             z-index: 5;
+            letter-spacing: 2px;
         }
         .start-btn:active {
             transform: translateY(4px);
@@ -321,12 +324,33 @@
             white-space: nowrap;
             font-size: clamp(2rem, 22vw, 7rem);
             color: var(--yellow-btn);
-            text-shadow: 0 0 20px rgba(253, 224, 71, 0.6), 0 0 50px rgba(253, 224, 71, 0.3);
+            text-shadow: 
+                0 0 20px rgba(253, 224, 71, 0.7), 
+                0 0 50px rgba(253, 224, 71, 0.4);
             z-index: 10;
             padding: 0 5px;
             letter-spacing: 2px;
             transition: filter 0.1s, opacity 0.1s;
             overflow: hidden;
+            transform-origin: center center;
+        }
+
+        /* Doğru cevap verilince kelimenin büyüyerek çıkma animasyonu */
+        .word-display.zoom-out {
+            animation: zoomOut 0.8s ease-in forwards;
+        }
+
+        @keyframes zoomOut {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+                filter: blur(0px);
+            }
+            100% {
+                transform: scale(15);
+                opacity: 0;
+                filter: blur(8px);
+            }
         }
 
         /* --- CEVAP BUTONLARI --- */
@@ -404,7 +428,7 @@
             filter: grayscale(0.8);
         }
 
-        /* --- ALT YAZI (Normal font, yeşil neon) --- */
+        /* --- ALT YAZI --- */
         .footer-note {
             width: 100%;
             text-align: center;
@@ -617,7 +641,6 @@
 
     <audio id="bgMusic" src=""></audio>
 
-    <!-- KONFETİ KATMANI -->
     <div class="confetti-layer" id="confettiLayer"></div>
 
     <!-- ANA EKRAN -->
@@ -655,8 +678,8 @@
         <div class="round-indicator" id="roundIndicator">Tur: 1 / 2</div>
         <div class="score-area" id="scoreArea"></div>
 
-        <div class="neon-box">
-            <button class="start-btn" id="startBtn" onclick="startGame()">START</button>
+        <div class="neon-box" id="neonBox">
+            <button class="start-btn" id="startBtn" onclick="startGame()">BAŞLAT</button>
             <div class="word-display" id="wordDisplay"></div>
         </div>
 
@@ -752,36 +775,52 @@
         const winnerText = document.getElementById('winnerText');
         const endScores = document.getElementById('endScores');
         const confettiLayer = document.getElementById('confettiLayer');
+        const neonBox = document.getElementById('neonBox');
 
-        // --- KONFETİ FONKSİYONU ---
         function launchConfetti() {
             const colors = ['#22c55e', '#3b82f6', '#d946ef', '#fde047', '#f97316', '#06b6d4', '#a855f7', '#ef4444'];
-            const pieceCount = 80;
+            const pieceCount = 70;
+            
+            const boxRect = neonBox.getBoundingClientRect();
+            const boxWidth = boxRect.width;
+            const boxBottom = boxRect.bottom;
+            const boxLeft = boxRect.left;
 
             for (let i = 0; i < pieceCount; i++) {
                 const piece = document.createElement('div');
                 piece.className = 'confetti-piece';
                 
-                // Rastgele özellikler
                 const color = colors[Math.floor(Math.random() * colors.length)];
-                const left = Math.random() * 100;
-                const delay = Math.random() * 0.5;
-                const duration = 2 + Math.random() * 1.5;
+                const startX = boxLeft + Math.random() * boxWidth;
+                const startY = boxBottom - 5;
+                
                 const size = 6 + Math.random() * 8;
                 const isCircle = Math.random() > 0.5;
                 
-                piece.style.left = left + 'vw';
+                const rise = -(150 + Math.random() * 350);
+                const drift = (Math.random() - 0.5) * 200;
+                const rotate = Math.random() * 720 - 360;
+                
+                const delay = Math.random() * 0.4;
+                const duration = 1.5 + Math.random() * 1.2;
+                
+                piece.style.left = startX + 'px';
+                piece.style.top = startY + 'px';
                 piece.style.width = size + 'px';
                 piece.style.height = size + 'px';
                 piece.style.background = color;
                 piece.style.borderRadius = isCircle ? '50%' : '2px';
                 piece.style.boxShadow = `0 0 8px ${color}`;
+                
+                piece.style.setProperty('--rise', rise + 'px');
+                piece.style.setProperty('--drift', drift + 'px');
+                piece.style.setProperty('--rotate', rotate + 'deg');
+                
                 piece.style.animationDuration = duration + 's';
                 piece.style.animationDelay = delay + 's';
                 
                 confettiLayer.appendChild(piece);
                 
-                // Animasyon bittikten sonra temizle
                 setTimeout(() => {
                     if (piece.parentNode) piece.remove();
                 }, (duration + delay) * 1000 + 200);
@@ -933,19 +972,22 @@
 
             if (isCorrect) {
                 players[currentPlayerIndex].score += 10;
-                // DOĞRU CEVAPTA KONFETİ PATLAT
                 launchConfetti();
+                // Kelimeyi büyütüp ekrandan çıkar
+                wordDisplay.classList.add('zoom-out');
+            } else {
+                wordDisplay.style.display = 'none';
             }
 
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-            wordDisplay.style.display = 'none';
 
             setTimeout(() => {
                 if (isGameActive) {
+                    wordDisplay.classList.remove('zoom-out');
                     wordDisplay.style.display = 'flex';
                     playTurn();
                 }
-            }, 1000);
+            }, 1100);
         }
 
         function endGame() {
@@ -987,6 +1029,7 @@
             
             wordDisplay.style.display = 'none';
             wordDisplay.textContent = '';
+            wordDisplay.classList.remove('zoom-out');
             startBtn.style.display = 'block';
             roundIndicator.style.display = 'none';
             scoreArea.style.display = 'none';
