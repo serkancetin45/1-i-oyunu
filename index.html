@@ -332,25 +332,6 @@
             letter-spacing: 2px;
             transition: filter 0.1s, opacity 0.1s;
             overflow: hidden;
-            transform-origin: center center;
-        }
-
-        /* Doğru cevap verilince kelimenin büyüyerek çıkma animasyonu */
-        .word-display.zoom-out {
-            animation: zoomOut 0.8s ease-in forwards;
-        }
-
-        @keyframes zoomOut {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-                filter: blur(0px);
-            }
-            100% {
-                transform: scale(15);
-                opacity: 0;
-                filter: blur(8px);
-            }
         }
 
         /* --- CEVAP BUTONLARI --- */
@@ -641,6 +622,7 @@
 
     <audio id="bgMusic" src=""></audio>
 
+    <!-- KONFETİ KATMANI -->
     <div class="confetti-layer" id="confettiLayer"></div>
 
     <!-- ANA EKRAN -->
@@ -694,7 +676,7 @@
             </button>
         </div>
         
-        <div class="footer-note">1/İ sınıfı için hazırlandı. Hüseyin Akdağ İlkokulu</div>
+        <div class="footer-note">Hüseyin Akdağ İlkokulu'nun çalışkan çocukları için tasarlandı.</div>
     </div>
 
     <!-- AYARLAR EKRANI -->
@@ -723,7 +705,7 @@
             <button class="back-btn" onclick="saveSettings()">KAYDET & GERİ DÖN</button>
         </div>
         
-        <div class="footer-note">1/İ sınıfı için hazırlandı. Hüseyin Akdağ İlkokulu</div>
+        <div class="footer-note">Hüseyin Akdağ İlkokulu'nun çalışkan çocukları için tasarlandı.</div>
     </div>
 
     <!-- OYUN SONU EKRANI -->
@@ -732,7 +714,7 @@
         <div class="end-winner" id="winnerText">Kazanan: —</div>
         <ul class="end-scores" id="endScores"></ul>
         <button class="end-btn" onclick="restartGame()">🔄 Yeniden Oyna</button>
-        <div class="footer-note">1/İ sınıfı için hazırlandı. Hüseyin Akdağ İlkokulu</div>
+        <div class="footer-note">Hüseyin Akdağ İlkokulu'nun çalışkan çocukları için tasarlandı.</div>
     </div>
 
     <script>
@@ -741,7 +723,12 @@
             { id: 2, name: 'Oyuncu 2', score: 0 }
         ];
         let currentPlayerIndex = 0;
-        let words = ["an", "na", "ana", "en", "ne", "nane", "anne", "nene", "at", "ta", "Ata", "ten", "anten", "Tan", "tat", "et", "net"];
+        // KELİME HAZNESİ (yeni kelimeler eklendi)
+        let words = [
+            "an", "na", "ana", "en", "ne", "nane", "anne", "nene",
+            "at", "ta", "Ata", "ten", "anten", "Tan", "tat", "et", "net",
+            "in", "ni", "it", "ti", "nine", "ninni", "ani", "ait", "eti"
+        ];
         let isGameActive = false;
         let canAnswer = false;
 
@@ -973,21 +960,17 @@
             if (isCorrect) {
                 players[currentPlayerIndex].score += 10;
                 launchConfetti();
-                // Kelimeyi büyütüp ekrandan çıkar
-                wordDisplay.classList.add('zoom-out');
-            } else {
-                wordDisplay.style.display = 'none';
             }
 
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            wordDisplay.style.display = 'none';
 
             setTimeout(() => {
                 if (isGameActive) {
-                    wordDisplay.classList.remove('zoom-out');
                     wordDisplay.style.display = 'flex';
                     playTurn();
                 }
-            }, 1100);
+            }, 1000);
         }
 
         function endGame() {
@@ -1029,7 +1012,6 @@
             
             wordDisplay.style.display = 'none';
             wordDisplay.textContent = '';
-            wordDisplay.classList.remove('zoom-out');
             startBtn.style.display = 'block';
             roundIndicator.style.display = 'none';
             scoreArea.style.display = 'none';
